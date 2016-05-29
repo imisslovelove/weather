@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html class="um landscape min-width-240px min-width-320px min-width-480px min-width-768px min-width-1024px">
+    <head>
+        <title></title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <link rel="stylesheet" href="css/fonts/font-awesome.min.css">
+        <link rel="stylesheet" href="css/ui-base.css">
+        <link rel="stylesheet" href="css/ui-box.css">
+        <link rel="stylesheet" href="index/css/main.css">
+        <link rel="stylesheet" href="css/ui-color.css">
+        <link rel="stylesheet" href="css/appcan.control.css">
+    </head>
+    <body class="um-vp" ontouchstart>
+        <div class="city-list content"></div>
+        <script src="js/appcan.js"></script>
+        <script src="js/appcan.control.js"></script>
+        <script src="js/appcan.listview.js"></script>
+        <script>
+            function updateInfo(city, ele) {
+                var weatherUrl = 'http://api.map.baidu.com/telematics/v3/weather?location=' + city + '&output=json&ak=hTXrtTGGcljoOMdf2jZcc1yD';
+                appcan.request.getJSON(weatherUrl, function(data) {
+                    if (data.error) {
+                        alert('获取天气出错');
+                    } else {
+                        var weatherData = data.results[0].weather_data;
+                        var today = weatherData[0];
+                        $(ele).find('.lis-icon-s').css('background-image', 'url("' + today.dayPictureUrl + '")');
+                    }
+                });
+            }
+
+            appcan.ready(function() {
+                appcan.frame.setBounce(0, function(type) {
+                    //$("#pullstatus"+type).html(!type?"开始下拉":"开始上拖");
+                }, function(type) {
+                    //$("#pullstatus"+type).html(!type?"下拉超过临界点,产生事件了！":"超过临界点,产生事件了！");
+                }, function(type) {
+                    $('.city-list li').each(function(i, v) {
+                        var data = v.lv_data;
+                        if (!data) {
+                            return;
+                        }
+                        updateInfo(encodeURI(data.title), v);
+                    });
+                    appcan.frame.resetBounce(type);
+                })
+                var lv = appcan.listview({
+                    selector : ".city-list",
+                    hasIcon : true,
+                    hasAngle : true
+                });
+
+                lv.set([{
+                    title : "北京",
+                    icon : "./css/res/appcan_s.png",
+                    icontitle : "",
+                }, {
+                    title : "南京",
+                    icon : "./css/res/appcan_s.png",
+                    icontitle : "",
+                }, {
+                    title : "杭州",
+                    icon : "./css/res/appcan_s.png",
+                    icontitle : "",
+                }, {
+                    title : "深圳",
+                    icon : "./css/res/appcan_s.png",
+                    icontitle : "",
+                }, {
+                    title : "上海",
+                    icon : "./css/res/appcan_s.png",
+                    icontitle : "",
+                }, {
+                    title : "三亚",
+                    icon : "./css/res/appcan_s.png",
+                    icontitle : "",
+                }, {
+                    title : "昆明",
+                    icon : "./css/res/appcan_s.png",
+                    icontitle : "",
+                }]);
+
+                function openDetail(city) {
+                    appcan.window.open({
+                        name : 'detail',
+                        data : 'detail.html?' + city,
+                        aniId : 10
+                    });
+                    appcan.locStorage.val('city', city);
+                }
+
+
+                lv.on('click', function(ele, obj, subobj) {
+                    openDetail(encodeURI(obj.title));
+                });
+
+                $('.city-list li').each(function(i, v) {
+                    var data = v.lv_data;
+                    if (!data) {
+                        return;
+                    }
+                    updateInfo(encodeURI(data.title), v);
+                });
+            })
+        </script>
+    </body>
+</html>

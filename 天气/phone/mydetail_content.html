@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html class="um landscape min-width-240px min-width-320px min-width-480px min-width-768px min-width-1024px">
+    <head>
+        <title></title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <link rel="stylesheet" href="css/fonts/font-awesome.min.css">
+        <link rel="stylesheet" href="css/ui-box.css">
+        <link rel="stylesheet" href="css/ui-base.css">
+        <link rel="stylesheet" href="css/ui-color.css">
+        <link rel="stylesheet" href="css/appcan.icon.css">
+        <link rel="stylesheet" href="css/appcan.control.css">
+    </head>
+    <body class="um-vp bc-bg" ontouchstart>
+        <div id="listview" class="ubt sc-border sc-bg"></div>
+    </body>
+    <script src="js/appcan.js"></script>
+    <script src="js/appcan.control.js"></script>
+    <script src="js/appcan.listview.js"></script>
+    </body>
+    <script>
+        function updateForecast(weatherData) {
+            var weatherList = [];
+            //遍历整个数据渲染整个列表添加到数据中
+            for (var i = 0,
+                len = weatherData.length; i < len; i++) {
+                var weather = weatherData[i];
+                weatherList.push({
+                    title : weather.temperature,
+                    subTitle : '<img src="' + weather.dayPictureUrl + '">',
+                    note : weather.date,
+                    describe : weather.wind,
+                    subDescribe : weather.weather
+                });
+            }
+            //创建一个listview对象设置渲染的数据到列表中
+            var lv = appcan.listview({
+                selector : "#listview",
+                type : 'thickLine',
+                hasSubTitle : true,
+                multiLine : 2,
+                hasIcon : false,
+                hasAngle : false
+            });
+            lv.set(weatherList);
+        }
+
+        function updateInfo(city) {
+            //打开一个没有弹出框的toast
+            appcan.window.openToast({
+                msg : '加载天气数据...',
+                duration : 0,
+                position : 5,
+                type : 0
+            });
+            var weatherUrl = 'http://api.map.baidu.com/telematics/v3/weather?location=' + city + '&output=json&ak=hTXrtTGGcljoOMdf2jZcc1yD';
+            appcan.request.ajax({
+                url : weatherUrl,
+                type : 'GET',
+                dataType : "json",
+                success : function(data) {
+                    if (data.error) {
+                        alert('获取天气出错');
+                    } else {
+                        var weatherData = data.results[0].weather_data;
+                        var today = weatherData[0];
+                        updateForecast(weatherData);
+                    }
+                    appcan.window.closeToast();
+                },
+                error : function(xhr, errorType, error, msg) {
+                    console.log(xhr);
+                    console.log(errorType);
+                    console.log(error);
+                    console.log(msg);
+                    alert(error + msg);
+                }
+            });
+        }
+
+
+        appcan.ready(function() {
+            appcan.initBounce();
+            var city = appcan.locStorage.val('city');
+            updateInfo(city);
+        })
+    </script>
+</html>

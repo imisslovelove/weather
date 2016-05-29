@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html class="um landscape min-width-240px min-width-320px min-width-480px min-width-768px min-width-1024px">
+    <head>
+        <title></title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <link rel="stylesheet" href="css/fonts/font-awesome.min.css">
+        <link rel="stylesheet" href="css/ui-box.css">
+        <link rel="stylesheet" href="css/ui-base.css">
+        <link rel="stylesheet" href="css/ui-color.css">
+        <link rel="stylesheet" href="css/appcan.icon.css">
+        <link rel="stylesheet" href="css/appcan.control.css">
+    </head>
+    <body class="um-vp bc-bg" ontouchstart>
+        <br/>
+        <div class="btn ub ub-ac bc-text-head ub-pc bc-btn"  id="btn">
+            <div class="uinn3 fa fa-check umh1 umw1"></div>
+            省份列表（请选择）
+        </div>
+
+        <div class="select uba bc-border bc-text" id="selectProvince">
+            <div class="text">
+                请选择省份
+            </div>
+            <div class="icon"></div>
+            <select>
+                <option>北京</option>
+                <option>天津</option>
+                <option>上海</option>
+                <option>重庆</option>
+                <option>黑龙江</option>
+                <option>吉林</option>
+                <option>辽宁</option>
+                <option>内蒙古</option>
+                <option>河北</option>
+                <option>山西</option>
+                <option>宁夏</option>
+                <option>新疆</option>
+                <option>青海</option>
+                <option>山东</option>
+                <option>河南</option>
+                <option>陕西</option>
+                <option>甘肃</option>
+                <option>四川</option>
+                <option>云南</option>
+                <option>贵州</option>
+                <option>安徽</option>
+                <option>江苏</option>
+                <option>江西</option>
+                <option>湖北</option>
+                <option>湖南</option>
+                <option>浙江</option>
+                <option>福建</option>
+                <option>广东</option>
+                <option>海南</option>
+                <option>香港</option>
+                <option>澳门</option>
+                <option>台湾</option>
+            </select>
+        </div>
+        <br/>
+        <div class="select uba bc-border bc-text" id="selectcitydiv">
+            <div class="text">
+                请选择城市
+            </div>
+            <div class="icon"></div>
+            <select id="selectcity"></select>
+        </div>
+        <br>
+        <div class="btn ub ub-ac bc-text-head ub-pc bc-btn"  id="btnQuery">
+            查看天气
+        </div>
+
+    </body>
+    <script src="js/appcan.js"></script>
+    <script src="js/appcan.control.js"></script>
+    </body>
+    <script>
+        var selectedCity = null;
+        appcan.ready(function() {
+        });
+
+        /**
+         * 选择省份按钮所进行的操作
+         */
+        appcan.select("#selectProvince", function(ele, value) {
+            if (value == "北京" || value == "天津" || value == "上海" || value == "重庆") {
+                $("#selectcity")[0].options.length = 0;
+                $("#selectcity")[0].options.add(new Option(value, value));
+                $('#selectcity').val(value);
+                $('#selectcity').trigger('change');
+                return;
+            }
+            appcan.window.openToast({
+                msg : '加载城市数据...',
+                duration : 0,
+                position : 5,
+                type : 0
+            });
+            console.log(value);
+            var cityUrl = 'http://www.webxml.com.cn/WebServices/WeatherWebService.asmx/getSupportCity';
+            console.log(cityUrl);
+            appcan.request.ajax({
+                url : cityUrl,
+                type : 'POST',
+                data : {
+                    'byProvinceName' : value
+                },
+                //contentType : "application/json",
+                dataType : "xml",
+                success : function(data) {
+                    console.log(data);
+                    console.log("is string " + appcan.isString(data));
+                    $("#selectcity")[0].options.length = 0;
+                    var xmlString = data;
+                    var post = xmlString.indexOf("<string>");
+                    var post1 = xmlString.lastIndexOf("</string>");
+                    xmlString = xmlString.substring(post, post1);
+                    var arrCity = xmlString.split("</string>");
+                    for (var i = 0; i < arrCity.length; i++) {
+                        var city = $.trim(arrCity[i]).split(" ")[0].replace("<string>", "");
+                        $("#selectcity")[0].options.add(new Option(city, city));
+                    }
+                    $('#selectcity').val($.trim(arrCity[0]).split(" ")[0].replace("<string>", ""));
+                    $('#selectcity').trigger('change');
+                    appcan.window.closeToast();
+                },
+                error : function(xhr, errorType, error, msg) {
+                    console.log(xhr);
+                    console.log(errorType);
+                    console.log(error);
+                    console.log(msg);
+                    alert(error + msg);
+                    appcan.window.closeToast();
+                }
+            });
+        });
+
+        /**
+         * 选择城市按钮所进行的操作。
+         */
+        appcan.select("#selectcitydiv", function(ele, value) {
+            console.log(value);
+            selectedCity = value;
+        });
+
+        /**
+         * 点击查询按钮所进行的操作。
+         */
+        appcan.button("#btnQuery", "ani-act", function() {
+            if (selectedCity == null) {
+                appcan.window.alert({
+                    title : "提示",
+                    content : "没有选择城市。请选择一个城市再查询天气。",
+                    buttons : ['确定'],
+                    callback : function(err, data, dataType, optId) {
+                        console.log(err, data, dataType, optId);
+                    }
+                });
+                return;
+            }
+
+            appcan.window.open({
+                name : 'mydetail',
+                data : 'mydetail.html?' + selectedCity,
+                aniId : 10
+            });
+            appcan.locStorage.val('city', encodeURI(selectedCity));
+        });
+    </script>
+</html>
