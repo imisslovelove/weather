@@ -43,6 +43,10 @@
                 hasAngle : false
             });
             lv.set(weatherList);
+            appcan.file.write({
+               filePath:"wgt://listview1.html",
+               content:$("#listview").html()
+            });
         }
 
         function updateInfo(city) {

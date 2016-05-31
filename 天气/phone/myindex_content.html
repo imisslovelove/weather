@@ -84,7 +84,7 @@
          * 选择省份按钮所进行的操作
          */
         appcan.select("#selectProvince", function(ele, value) {
-            if (value == "北京" || value == "天津" || value == "上海" || value == "重庆") {
+            if (value == "北京" || value == "天津" || value == "上海" || value == "重庆"|| value == "香港"|| value == "澳门") {
                 $("#selectcity")[0].options.length = 0;
                 $("#selectcity")[0].options.add(new Option(value, value));
                 $('#selectcity').val(value);

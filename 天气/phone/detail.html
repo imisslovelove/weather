@@ -10,6 +10,11 @@
         <link rel="stylesheet" href="css/ui-color.css">
         <link rel="stylesheet" href="css/appcan.icon.css">
         <link rel="stylesheet" href="css/appcan.control.css">
+        <style>
+            #nav-left {
+                padding: 0.5em 0.7em;
+            }
+        </style>
     </head>
     <body class="um-vp " ontouchstart>
         <div id="page_0" class="up ub ub-ver bc-bg" tabindex="0">
@@ -24,7 +29,7 @@
                 </div>
             </div>
             <!--header结束--><!--content开始-->
-            <div id="content" class="ub-f1 tx-l">
+            <div id="content" class="ub-f1 tx-l appCan ub-img4">
 
             </div>
             <!--content结束-->
@@ -36,24 +41,21 @@
                 <div class="tx-c t-93 ulev-4 umar-at1">
                     正益无线（北京）科技有限公司
                 </div>
-
             </div>
-            <script src="js/appcan.js"></script>
-            <script src="js/appcan.control.js"></script>
+        </div>
+        <script src="js/appcan.js"></script>
+        <script src="js/appcan.control.js"></script>
     </body>
     <script>
-        appcan.ready(function() {
-            var titHeight = $('#header').offset().height;
-            appcan.frame.open("content", "detail_content.html", 0, titHeight);
-            window.onorientationchange = window.onresize = function() {
-                appcan.frame.resize("content", 0, titHeight);
-            }
-            var city = appcan.locStorage.val('city');
-            $('#detailtitle').html(decodeURI(city) + '天气详情');
-        });
         appcan.button(".nav-btn", "btn-act", function() {
             appcan.window.close(-1);
-        })
+        });
 
+        appcan.ready(function() {
+            var city = appcan.locStorage.val('city');
+            $('.detail-title').html(decodeURI(city) + '天气详情');
+            appcan.openPopoverByEle("content", "detail_content.html", 0, $('#header').offset().height);
+
+        });
     </script>
 </html>
