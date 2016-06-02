@@ -28,8 +28,11 @@
 
             </div>
             <!--content结束-->
-            <div id="footer" class="uinn-z1">
-                <div id="tabview" class="uf sc-bg ubb bc-border" id=""></div>
+            <!--<div id="footer" class="uinn-z1"  style="background:#0070C0">
+            <div id="tabview" class="uf sc-bg ubb bc-border"  ></div>
+            </div>-->
+            <div id="footer" class="ub c-wh2" style="background:#0070C0">
+                <div class="ub ub-ac us-hnfn ub-f1" id="tabview"></div>
             </div>
         </div>
         <script src="js/appcan.js"></script>
@@ -38,13 +41,13 @@
     </body>
     <script>
         appcan.ready(function() {
-            var titHeight = $('#header').offset().height; 
+            var titHeight = $('#header').offset().height;
             appcan.frame.open("content", "index_content.html", 0, titHeight);
             window.onorientationchange = window.onresize = function() {
                 appcan.frame.resize("content", 0, titHeight);
             }
         });
-        
+
         var tabview = appcan.tab({
             selector : "#tabview",
             hasIcon : false,
@@ -57,19 +60,19 @@
                 label : "自己修改",
             }]
         });
-            
+
         tabview.on("click", function(obj, index) {
-            var titHeight = $('#header').offset().height; 
+            var titHeight = $('#header').offset().height;
             if (index == 0) {
                 appcan.frame.open("content", "index_content.html", 0, titHeight);
                 return;
             }
-            if (index == 1) {            
+            if (index == 1) {
                 appcan.frame.open("content", "myindex_content.html", 0, titHeight);
                 return;
             }
         });
-            
+
         appcan.button(".nav-btn", "btn-act", function() {
             appcan.window.close(-1);
         })
